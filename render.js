@@ -13,15 +13,20 @@ const renderBlackNotes = ({ notes, values }) => renderNotes({ notes, values, cla
 const renderBinKey = value => renderKey({ note: value, className: 'nlk-white' });
 
 const renderHTML = state => ([
+  '<h4>Knobs</h4>',
+  halfKey + halfKey + halfKey + renderWhiteNotes({
+    notes: [ 21, 22, 23, 24, 25, 26, 27, 28 ],
+    values: state.knobs
+  }),
   '<h4>Pads</h4>',
   renderBinKey(state.trackPrev ? '<' : '') + halfKey + renderWhiteNotes({
     notes: [ 40, 41, 42, 43, 48, 49, 50, 51 ],
     values: state.padNotes
-  }) + halfKey + renderBinKey(state.playTop ? '▶' : ''),
+  }) + halfKey + renderBinKey(state.playTop ? '▶' : '') + halfKey + renderBinKey(state.scenePrev ? '⬆' : ''),
   renderBinKey(state.trackNext ? '>' : '') + halfKey + renderWhiteNotes({
     notes: [ 36, 37, 38, 39, 44, 45, 46, 47 ],
     values: state.padNotes
-  }) + halfKey + renderBinKey(state.playBottom ? '▶' : ''),
+  }) + halfKey + renderBinKey(state.playBottom ? '▶' : '') + halfKey + renderBinKey(state.sceneNext ? '⬇' : ''),
   '<h4>Keys</h4>',
   halfKey + renderBlackNotes({
     notes: [ 49, 51, null, 54, 56, 58, null, 61, 63, null, 66, 68, 70 ],
