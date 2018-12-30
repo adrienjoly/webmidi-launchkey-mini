@@ -50,9 +50,14 @@
         document.getElementById('renderedKeyboard').innerHTML = renderHTML(state);
       }
 
+      listenToKeyboardMessages(function(parsedMidiMessage) {
+        //console.log(parsedMidiMessage);
+        mutateAndRender(parsedMidiMessage);
+      });
+
       listenToMidiMessages(function(midiMessage) {
         var parsedMidiMessage = parseMidiMessage(midiMessage);
-        console.log(parsedMidiMessage);
+        //console.log(parsedMidiMessage);
         mutateAndRender(parsedMidiMessage);
       });
 
