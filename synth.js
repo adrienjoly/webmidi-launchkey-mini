@@ -2,21 +2,8 @@
 // (very) inspired by https://devdocs.io/dom/web_audio_api/simple_synth
 
 function initSynth(){
-  
-  const noteFreq = {
-    'C' : 32.703195662574829,
-    'C#': 34.647828872109012,
-    'D' : 36.708095989675945,
-    'D#': 38.890872965260113,
-    'E' : 41.203444614108741,
-    'F' : 43.653528929125485,
-    'F#': 46.249302838954299,
-    'G' : 48.999429497718661,
-    'G#': 51.913087197493142,
-    'A' : 55.000000000000000,
-    'A#': 58.270470189761239,
-    'B' : 61.735412657015513,
-  };
+
+  const NOTES = [ 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B' ];
   
   const audioContext = new (window.AudioContext || window.webkitAudioContext);
   let masterGainNode = audioContext.createGain();
@@ -40,12 +27,10 @@ function initSynth(){
   var currentPatch = 2;
 
   function switchPatch() {
-    // console.log('switchPatch', ...arguments);
     currentPatch = (currentPatch + 1) % patches.length;
   }
   
   function playTone(freq, patch = patches[currentPatch]) {
-    // console.log('playTone', ...arguments);
     const osc = audioContext.createOscillator();
     osc.connect(masterGainNode);
     if (patch.apply) {
@@ -60,7 +45,8 @@ function initSynth(){
 
   function playNote({ note, octave }, patch = patches[currentPatch]) {
     console.log('synth.playNote', { note, octave });
-    return playTone(noteFreq[note] * octave);
+    const freq = 440 * Math.pow(Math.pow(2, 1 / 12), ((octave - 4) * 12) + NOTES.indexOf(note));
+    return playTone(freq);
   }
 
   return {
