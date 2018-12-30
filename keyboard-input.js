@@ -59,32 +59,27 @@ function listenToKeyboardMessages(handler) {
     return keyNotes[key];
   }
 
-  window.addEventListener('keydown', function onkeydown(e){
-    playKeyTone(e.key);
-    if (getKeyNote(e.key)) {
-      emit({
-        channel: 1,
-        command: 9,
-        note: getKeyNote(e.key),
-        velocity: 64,
-      });
-    }
-  });
-  
-  window.addEventListener('keyup', function onkeyup(e){
-    if (e.key === ',') {
-      switchPatch();
-    } else {
-      stopKeyTone(e.key);
-      if (getKeyNote(e.key)) {
-        emit({
-          channel: 1,
-          command: 8,
-          note: getKeyNote(e.key),
-          velocity: 0,
-        });
+  function handleKeyboardEvent(e) {
+    const keyUp = e.type === 'keyup';
+    const note = getKeyNote(e.key);
+    if (note) {
+      if (keyUp) {
+        stopKeyTone(e.key);
+      } else {
+        playKeyTone(e.key);
       }
+      emit({
+        channel: note < 48 ? 10 : 1,
+        command: keyUp ? 8 : 9,
+        note,
+        velocity: keyUp ? 0 : 64,
+      });
+    } else if (keyUp && e.key === ',') {
+      switchPatch();
     }
-  });
+  }
+
+  window.addEventListener('keydown', handleKeyboardEvent);
+  window.addEventListener('keyup', handleKeyboardEvent);
     
 }
