@@ -1,32 +1,32 @@
-var keyToPitch = { "z":"C3", "s":"C#3", "x":"D3", "d":"D#3", "c":"E3", "v":"F3", "g":"F#3", "b":"G3", "h":"G#3", "n":"A3", "j":"A#3", "m":"B3", ",":"C4" }
+// play sounds from sfxr, using the keyboard keys Q W E R (for now)
 
-var synth = new Tone.PolySynth(6, Tone.Synth, {
-  "oscillator" : {
-    "type": "sawtooth",
-    "partials" : [0, 2, 3, 4],
+var sounds = {
+  // the following sounds were generated from http://sfxr.me/#xxx
+  note: '57uBnWaZnX5epkVRTRaKisqumxSookAZAcRFh3i3o7wm3JihoMFMH6E9MobUXRBPKTWCpUGBBaFre7xWzyn6uNWDGqg7gu5vUzuaP5E9eNMWiD97wag55V6XZ', 
+  kick: '111117LEZmtz2FicvrRJo7kHyFWCJUwQRPcF6KnwugJNUG1K4RLC9ykcRZ3Kpmz9SZLkm2QFfbUXBeUVUJM6A64RW3KqiFACpgMTCCfShw6ULRmNJxC5Gzhu',
+  hisnare: '7BMHBGKuAPaGvBx3ZmAMuDhzbB2WoFLXeZtD5z3Mmua4AjCyyiwkK3P3ThNpvKivDcSRSwcArme3n1F55tXFjPhmG4tWU4S5CvdD8rnWuKJBg5qPTkBHKLtHV',
+  drysnare: '7BMHBGHtQBNHMkrpKTFy7cNBjZbgFpyZUvbv8X8fogVzVC9t8rHtuLK1vyDgC9JRZkPicMw6bWZs5a4xDexdVuD8DgT9gZr7kSaw2D2XfLiUG824x65Fj7XXm',
+  closedhihat: '7BMHBGDUkor33zEmej7ksLPmQHehCsDu3PLjaC5Pc6BBNwpvsrALSo6kmPuPmbr3EooLJnZ1CeKTSrBESJmPKJcZuBWY7qPcGaij8cHDpJxXvtMqQZjjcCx4n',
+  openhihat: '7BMHBGCKUHWg6FXnLvD3feX5FqDihbrYi56j7QDqJifRW85f7xH49eo94EwBUEAC3jbTMee5rMHva53ES76LqcVNfNXUJFQixERhcZpVPqYKY2sorYHtaPDxz',
+};
+
+cachedSounds = {};
+
+for (var name in sounds) {
+  cachedSounds[name] = new SoundEffect(sounds[name]).generate().getAudio();
+}
+
+var keys = {
+  q: 'kick',
+  w: 'drysnare',
+  e: 'closedhihat',
+  r: 'openhihat',
+};
+  
+window.addEventListener('keydown', function onkeydown(e){
+  console.log(e.key, e);
+  var soundKey = keys[e.key];
+  if (soundKey) {
+    cachedSounds[soundKey].play();
   }
-}).toMaster();
-
-window.addEventListener('keydown', this.onkeydown)
-window.addEventListener('keyup', this.onkeyup)
-
-function onkeydown(e){
-  Tone.context.resume().then(() => {
-    synth.triggerAttack(keyToPitch[e.key], Tone.context.currentTime)
-  });
-}
-
-function onkeyup(e){
-  Tone.context.resume().then(() => {
-    synth.triggerRelease(keyToPitch[e.key])
-  });
-}
-
-// TODO: play sounds from sfxr
-
-/*
-<script src="https://chr15m.github.io/jsfxr/riffwave.js"></script> <!-- imports RIFFWAVE -->
-<script src="https://chr15m.github.io/jsfxr/sfxr.js"></script> <!-- imports SoundEffect -->
-var s = new SoundEffect("5EoyNVSymuxD8s7HP1ixqdaCn5uVGEgwQ3kJBR7bSoApFQzm7E4zZPW2EcXm3jmNdTtTPeDuvwjY8z4exqaXz3NGBHRKBx3igYfBBMRBxDALhBSvzkF6VE2Pv").generate();
-s.getAudio().play();
-*/
+});
