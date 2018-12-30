@@ -7,46 +7,51 @@ let playParsedMidiMessage;
 
   const synth = initSynth();
 
-  const keyMapping = {
-    // pads
+  const NOTES = [ 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B' ];
+
+  const padMapping = {
     36: () => playSound('kick'),
     37: () => playSound('drysnare'),
     38: () => playSound('closedhihat'),
     39: () => playSound('openhihat'),
-    // white and black keys
-    48: () => synth.playNote('C'), 49: () => synth.playNote('C#'),
-    50: () => synth.playNote('D'), 51: () => synth.playNote('D#'),
-    52: () => synth.playNote('E'),
-    53: () => synth.playNote('F'), 54: () => synth.playNote('F#'),
-    55: () => synth.playNote('G'), 56: () => synth.playNote('G#'),
-    57: () => synth.playNote('A'), 58: () => synth.playNote('A#'),
-    59: () => synth.playNote('B'),
-    // other commands
+  };
+
+  const commandMapping = {
     107: () => synth.switchPatch(),
   };
 
-  const pressedNotes = {};
+  const activeNotes = {};
 
-  function stopNote(note) {
-    const oscillator = pressedNotes[note] || {};
-    if (oscillator.stop) pressedNotes[note].stop();
-    delete pressedNotes[note];
+  function stopNote(note, channel) {
+    const oscillator = activeNotes[note] || {};
+    if (oscillator.stop) {
+      activeNotes[note].stop();
+      delete activeNotes[note];
+    }
   }
 
-  function playNote(note) {
-    console.log('playNote', note, keyMapping[note]);
-    stopNote(note);
-    if (keyMapping[note]) {
-      pressedNotes[note] = keyMapping[note]();
+  function playNote(note, channel) {
+    console.log('playNote', { note, channel });
+    if (channel === 10) {
+      padMapping[note]();
+    } else {
+      // white and black keys
+      stopNote(note);
+      const octave = Math.floor(note / 12);
+      const noteIdx = note % 12;
+      activeNotes[note] = synth.playNote(NOTES[noteIdx]);
     }
   }
 
   playParsedMidiMessage = function (parsedMidiMessage) {
+    const commandKey = parsedMidiMessage.command === 11;
     const keyUp = parsedMidiMessage.command === 8;
-    if (keyUp) {
-      stopNote(parsedMidiMessage.note);
+    if (commandKey) {
+      commandMapping[parsedMidiMessage.note]();
+    } else if (keyUp) {
+      stopNote(parsedMidiMessage.note, parsedMidiMessage.channel);
     } else {
-      playNote(parsedMidiMessage.note);
+      playNote(parsedMidiMessage.note, parsedMidiMessage.channel);
     }
   };
   

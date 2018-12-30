@@ -41,7 +41,6 @@
 
     <script>
       function handleParsedMidiMessage(message) {
-        // console.log(message);
         var state = mutateState(message);
         document.getElementById('renderedKeyboard').innerHTML = renderHTML(state);
         playParsedMidiMessage(message); // requires synth and sfxr
