@@ -1,6 +1,8 @@
-// play sounds from sfxr, using the keyboard keys Q W E R (for now)
+// Play sounds made with sfxr
 
-var sounds = {
+// exports:
+let playSound; // function
+const sounds = {
   // the following sounds were generated from http://sfxr.me/#xxx
   note: '57uBnWaZnX5epkVRTRaKisqumxSookAZAcRFh3i3o7wm3JihoMFMH6E9MobUXRBPKTWCpUGBBaFre7xWzyn6uNWDGqg7gu5vUzuaP5E9eNMWiD97wag55V6XZ', 
   kick: '111117LEZmtz2FicvrRJo7kHyFWCJUwQRPcF6KnwugJNUG1K4RLC9ykcRZ3Kpmz9SZLkm2QFfbUXBeUVUJM6A64RW3KqiFACpgMTCCfShw6ULRmNJxC5Gzhu',
@@ -10,23 +12,16 @@ var sounds = {
   openhihat: '7BMHBGCKUHWg6FXnLvD3feX5FqDihbrYi56j7QDqJifRW85f7xH49eo94EwBUEAC3jbTMee5rMHva53ES76LqcVNfNXUJFQixERhcZpVPqYKY2sorYHtaPDxz',
 };
 
-cachedSounds = {};
-
-for (var name in sounds) {
-  cachedSounds[name] = new SoundEffect(sounds[name]).generate().getAudio();
-}
-
-var keys = {
-  q: 'kick',
-  w: 'drysnare',
-  e: 'closedhihat',
-  r: 'openhihat',
-};
+(function(){
   
-window.addEventListener('keydown', function onkeydown(e){
-  console.log(e.key, e);
-  var soundKey = keys[e.key];
-  if (soundKey) {
-    cachedSounds[soundKey].play();
+  const cachedSounds = {}; // lazy-loaded
+  
+  function cacheSound(soundId) {
+    return cachedSounds[soundId] = new SoundEffect(sounds[soundId]).generate().getAudio();
   }
-});
+  
+  playSound = function (soundId) {
+    return (cachedSounds[soundId] || cacheSound(soundId)).play();
+  }
+
+})();
