@@ -1,33 +1,4 @@
-const keyMapping = {
-  // pads
-  q: () => playSound('kick'),
-  w: () => playSound('drysnare'),
-  e: () => playSound('closedhihat'),
-  r: () => playSound('openhihat'),
-  // notes
-  z: () => playNote('C'), s: () => playNote('C#'),
-  x: () => playNote('D'), d: () => playNote('D#'),
-  c: () => playNote('E'),
-  v: () => playNote('F'), g: () => playNote('F#'),
-  b: () => playNote('G'), h: () => playNote('G#'),
-  n: () => playNote('A'), j: () => playNote('A#'),
-  m: () => playNote('B')
-}; // and use ',' to switch patches (sine / square / triangle...)
-
-const pressedKeys = {};
-
-function stopKeyTone(key) {
-  const oscillator = pressedKeys[key] || {};
-  if (oscillator.stop) pressedKeys[key].stop();
-  delete pressedKeys[key];
-}
-
-function playKeyTone(key) {
-  stopKeyTone(key);
-  if (keyMapping[key]) {
-    pressedKeys[key] = keyMapping[key]();
-  }
-}
+// Generates pseudo-MIDI messages from the computer's keyboard.
 
 function listenToKeyboardMessages(handler) {
 
@@ -53,33 +24,40 @@ function listenToKeyboardMessages(handler) {
     b: 55, h: 56,
     n: 57, j: 58,
     m: 59,
+  };
+
+  const keyCommands = {
+    ']': 107, // trackNext
   }
 
   function getKeyNote(key) {
     return keyNotes[key];
   }
 
+  function getKeyCommand(key) {
+    return keyCommands[key];
+  }
+
   function handleKeyboardEvent(e) {
     const keyUp = e.type === 'keyup';
     const note = getKeyNote(e.key);
     if (note) {
-      if (keyUp) {
-        stopKeyTone(e.key);
-      } else {
-        playKeyTone(e.key);
-      }
+      // send a "pad" or "keyboard" event (note)
       emit({
         channel: note < 48 ? 10 : 1,
         command: keyUp ? 8 : 9,
         note,
         velocity: keyUp ? 0 : 64,
       });
-    } else if (keyUp && e.key === ',') {
-      switchPatch();
+    } else if (keyUp) {
+      // send a "command" event (e.g. prev/next controllers)
+      emit({
+        command: 11,
+        note: getKeyCommand(e.key)
+      });
     }
   }
 
   window.addEventListener('keydown', handleKeyboardEvent);
   window.addEventListener('keyup', handleKeyboardEvent);
-    
 }

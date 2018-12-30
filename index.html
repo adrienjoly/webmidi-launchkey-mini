@@ -28,40 +28,34 @@
     Plug your Launchkey Mini, open the JavaScript console and watch it while you interact with the keyboard.
     <div id="renderedKeyboard"></div>
 
+    <script src="keyboard-input.js"></script>
     <script src="webmidi-reader.js"></script>
     <script src="launchkey-state.js"></script>
     <script src="render.js"></script>
-
-    <!--
-    <script src="lib/Tone.js"></script>
-    <script src="tone-generator.js"></script>
-    -->
-    <script src="synth-connector.js"></script>
-    <script src="keyboard-input.js"></script>
     
     <script src="lib/riffwave.js"></script> <!-- imports RIFFWAVE -->
     <script src="lib/sfxr.js"></script> <!-- imports SoundEffect -->
     <script src="sound-generator.js"></script>
+    <script src="synth.js"></script>
+    <script src="note-player.js"></script>
 
     <script>
-      function mutateAndRender(message) {
+      function handleParsedMidiMessage(message) {
+        // console.log(message);
         var state = mutateState(message);
-        // console.log(JSON.stringify(state));
         document.getElementById('renderedKeyboard').innerHTML = renderHTML(state);
+        playParsedMidiMessage(message); // requires synth and sfxr
       }
 
       listenToKeyboardMessages(function(parsedMidiMessage) {
-        //console.log(parsedMidiMessage);
-        mutateAndRender(parsedMidiMessage);
+        handleParsedMidiMessage(parsedMidiMessage);
       });
 
       listenToMidiMessages(function(midiMessage) {
-        var parsedMidiMessage = parseMidiMessage(midiMessage);
-        //console.log(parsedMidiMessage);
-        mutateAndRender(parsedMidiMessage);
+        handleParsedMidiMessage(parseMidiMessage(midiMessage));
       });
 
-      mutateAndRender({}); // just to render
+      handleParsedMidiMessage({}); // just to render
     </script>
   </body>
 </html>

@@ -1,12 +1,7 @@
 // Polyphonic Synth Tone generator based on WebAudio
 // (very) inspired by https://devdocs.io/dom/web_audio_api/simple_synth
 
-// exports:
-let playTone; // function
-let playNote; // function
-let switchPath; // function
-
-(function(){
+function initSynth(){
   
   const noteFreq = {
     'C' : 32.703195662574829,
@@ -44,11 +39,13 @@ let switchPath; // function
   
   var currentPatch = 2;
 
-  switchPatch = function() {
+  function switchPatch() {
+    // console.log('switchPatch', ...arguments);
     currentPatch = (currentPatch + 1) % patches.length;
-  };
+  }
   
-  playTone = function(freq, patch = patches[currentPatch]) {
+  function playTone(freq, patch = patches[currentPatch]) {
+    // console.log('playTone', ...arguments);
     const osc = audioContext.createOscillator();
     osc.connect(masterGainNode);
     if (patch.apply) {
@@ -59,10 +56,16 @@ let switchPath; // function
     osc.frequency.value = freq;
     osc.start();
     return osc;
-  };
+  }
 
-  playNote = function(note, patch = patches[currentPatch]) {
+  function playNote(note, patch = patches[currentPatch]) {
+    // console.log('playNote', ...arguments);
     return playTone(noteFreq[note] * 3);
+  }
+
+  return {
+    playTone,
+    playNote,
+    switchPatch,
   };
-  
-})();
+}
