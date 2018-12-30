@@ -58,9 +58,9 @@ function initSynth(){
     return osc;
   }
 
-  function playNote(note, patch = patches[currentPatch]) {
-    // console.log('playNote', ...arguments);
-    return playTone(noteFreq[note] * 3);
+  function playNote({ note, octave }, patch = patches[currentPatch]) {
+    console.log('synth.playNote', { note, octave });
+    return playTone(noteFreq[note] * octave);
   }
 
   return {

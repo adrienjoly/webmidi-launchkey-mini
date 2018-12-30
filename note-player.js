@@ -39,7 +39,7 @@ let playParsedMidiMessage;
       stopNote(note);
       const octave = Math.floor(note / 12);
       const noteIdx = note % 12;
-      activeNotes[note] = synth.playNote(NOTES[noteIdx]);
+      activeNotes[note] = synth.playNote({ note: NOTES[noteIdx], octave });
     }
   }
 
