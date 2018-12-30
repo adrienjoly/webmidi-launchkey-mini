@@ -30,16 +30,16 @@ let playParsedMidiMessage;
     }
   }
 
-  function playNote({ note, channel }) {
-    console.log('playNote', { note, channel });
+  function playNote({ note, channel, velocity }) {
+    console.log('playNote', { note, channel, velocity });
     if (channel === 10) {
-      padMapping[note]();
+      padMapping[note]({ velocity });
     } else {
       // white and black keys
       stopNote({ note, channel });
       const octave = Math.floor(note / 12);
       const noteIdx = note % 12;
-      activeNotes[note] = synth.playNote({ note: NOTES[noteIdx], octave });
+      activeNotes[note] = synth.playNote({ note: NOTES[noteIdx], octave, velocity });
     }
   }
 
@@ -51,7 +51,7 @@ let playParsedMidiMessage;
     } else if (keyUp) {
       stopNote({ note, channel });
     } else {
-      playNote({ note, channel });
+      playNote({ note, channel, velocity });
     }
   };
   
