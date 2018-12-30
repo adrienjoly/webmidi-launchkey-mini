@@ -25,8 +25,10 @@
     </style>
   </head>
   <body>
-    Plug your Launchkey Mini, open the JavaScript console and watch it while you interact with the keyboard.
-    <div id="renderedKeyboard"></div>
+    Plug your Launchkey Mini, click on the button below, then watch this page while you interact with the keyboard.
+    <div id="renderedKeyboard">
+      <button id="run">Start</button>
+    </div>
 
     <script src="keyboard-input.js"></script>
     <script src="webmidi-reader.js"></script>
@@ -43,7 +45,9 @@
       function handleParsedMidiMessage(message) {
         var state = mutateState(message);
         document.getElementById('renderedKeyboard').innerHTML = renderHTML(state);
-        playParsedMidiMessage(message); // requires synth and sfxr
+        if (message.note) {
+          playParsedMidiMessage(message); // requires synth and sfxr
+        }
       }
 
       listenToKeyboardMessages(function(parsedMidiMessage) {
@@ -54,7 +58,9 @@
         handleParsedMidiMessage(parseMidiMessage(midiMessage));
       });
 
-      handleParsedMidiMessage({}); // just to render
+      document.getElementById('run').onclick = function() {
+        handleParsedMidiMessage({}); // just to activate WebAudio after a user gesture
+      };
     </script>
   </body>
 </html>
