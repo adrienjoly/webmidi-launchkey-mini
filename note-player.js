@@ -22,7 +22,7 @@ let playParsedMidiMessage;
 
   const activeNotes = {};
 
-  function stopNote(note, channel) {
+  function stopNote({ note, channel }) {
     const oscillator = activeNotes[note] || {};
     if (oscillator.stop) {
       activeNotes[note].stop();
@@ -30,28 +30,28 @@ let playParsedMidiMessage;
     }
   }
 
-  function playNote(note, channel) {
+  function playNote({ note, channel }) {
     console.log('playNote', { note, channel });
     if (channel === 10) {
       padMapping[note]();
     } else {
       // white and black keys
-      stopNote(note);
+      stopNote({ note, channel });
       const octave = Math.floor(note / 12);
       const noteIdx = note % 12;
       activeNotes[note] = synth.playNote({ note: NOTES[noteIdx], octave });
     }
   }
 
-  playParsedMidiMessage = function (parsedMidiMessage) {
-    const commandKey = parsedMidiMessage.command === 11;
-    const keyUp = parsedMidiMessage.command === 8;
+  playParsedMidiMessage = function ({ command, note, channel, velocity }) {
+    const commandKey = command === 11;
+    const keyUp = command === 8;
     if (commandKey) {
-      commandMapping[parsedMidiMessage.note]();
+      commandMapping[note]();
     } else if (keyUp) {
-      stopNote(parsedMidiMessage.note, parsedMidiMessage.channel);
+      stopNote({ note, channel });
     } else {
-      playNote(parsedMidiMessage.note, parsedMidiMessage.channel);
+      playNote({ note, channel });
     }
   };
   
