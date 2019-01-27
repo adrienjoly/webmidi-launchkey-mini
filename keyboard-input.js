@@ -24,6 +24,9 @@ function listenToKeyboardMessages(handler) {
     b: 55, h: 56,
     n: 57, j: 58,
     m: 59,
+    ',': 60, 'l': 61,
+    '.': 62, ';': 63,
+    '/': 64,
   };
 
   const keyCommands = {
