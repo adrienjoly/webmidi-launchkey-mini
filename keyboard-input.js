@@ -61,6 +61,6 @@ function listenToKeyboardMessages(handler) {
     }
   }
 
-  window.addEventListener('keydown', handleKeyboardEvent);
+  window.addEventListener('keydown', e => !e.repeat && handleKeyboardEvent(e));
   window.addEventListener('keyup', handleKeyboardEvent);
 }
