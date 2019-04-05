@@ -31,6 +31,26 @@ function initSynth(){
     const osc = audioContext.createOscillator();
     const masterGainNode = audioContext.createGain();
     masterGainNode.connect(audioContext.destination);
+
+    //////////////////////
+    // 1. Create a scope and connect it to the source
+    const scope = new Scope.ScopeSampler(audioContext);
+    masterGainNode.connect(scope.getInput());
+
+    // 2. Create a canvas renderer for the scope
+    const canvas = document.querySelector('#osc1');
+    const scopeVis = new Scope.ScopeRenderer(canvas);
+
+    // 3. Create a draw batch targeting 10fps
+    //    with a single draw instruction in the batch (1 per displayed scope)
+    const drawBatch = new Scope.ScopeDrawBatch();
+    drawBatch.add(() => scopeVis.draw(scope.sample()));
+
+    // 5. Start the render
+    drawBatch.start();
+    //////////////////////////////////////////
+
+
     // masterGainNode.gain.value = 1.0;
     masterGainNode.gain.value = velocity / 127;
     osc.connect(masterGainNode);
