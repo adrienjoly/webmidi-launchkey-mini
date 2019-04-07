@@ -42,13 +42,20 @@
     <script src="lib/scope.js"></script> <!-- imports Scope -->
     <script src="sound-generator.js"></script>
     <script src="synth.js"></script> <!-- imports initSynth -->
+    <script src="oscilloscope.js"></script> <!-- imports initOscilloscope -->
     <script src="note-player.js"></script>
 
     <script>
       const audioContext = new (window.AudioContext || window.webkitAudioContext);
+  
+      const oscilloscope = initOscilloscope({
+        Scope,
+        audioContext,
+        canvas: document.querySelector('#osc1')
+      });
       const synth = initSynth({ audioContext }); // creates an audio context for one "channel"
       const soundGenerator = initSoundGenerator({ SoundEffect });
-      const notePlayer = initNotePlayer({ audioContext, synth, soundGenerator });
+      const notePlayer = initNotePlayer({ synth, soundGenerator, oscilloscope });
 
       function handleParsedMidiMessage(message) {
         var state = mutateState(message);
