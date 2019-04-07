@@ -1,19 +1,14 @@
 // Play tones and sounds when notes are triggered from a keyboard or MIDI input.
 
-// exports:
-let playParsedMidiMessage;
-
-(function(){
-
-  const synth = initSynth();
+function initNotePlayer({ synth, soundGenerator }){
 
   const NOTES = [ 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B' ];
 
   const padMapping = {
-    36: () => playSound('kick'),
-    37: () => playSound('drysnare'),
-    38: () => playSound('closedhihat'),
-    39: () => playSound('openhihat'),
+    36: () => soundGenerator.playSound('kick'),
+    37: () => soundGenerator.playSound('drysnare'),
+    38: () => soundGenerator.playSound('closedhihat'),
+    39: () => soundGenerator.playSound('openhihat'),
   };
 
   const commandMapping = {
@@ -43,7 +38,7 @@ let playParsedMidiMessage;
     }
   }
 
-  playParsedMidiMessage = function ({ command, note, channel, velocity }) {
+  function playParsedMidiMessage({ command, note, channel, velocity }) {
     const commandKey = command === 11;
     const keyUp = command === 8;
     if (commandKey) {
@@ -54,5 +49,9 @@ let playParsedMidiMessage;
       playNote({ note, channel, velocity });
     }
   };
+
+  return {
+    playParsedMidiMessage
+  };
   
-})();
+}

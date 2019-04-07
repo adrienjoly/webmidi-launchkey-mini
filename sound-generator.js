@@ -1,7 +1,5 @@
 // Play sounds made with sfxr
 
-// exports:
-let playSound; // function
 const sounds = {
   // the following sounds were generated from http://sfxr.me/#xxx
   note: '57uBnWaZnX5epkVRTRaKisqumxSookAZAcRFh3i3o7wm3JihoMFMH6E9MobUXRBPKTWCpUGBBaFre7xWzyn6uNWDGqg7gu5vUzuaP5E9eNMWiD97wag55V6XZ', 
@@ -12,7 +10,7 @@ const sounds = {
   openhihat: '7BMHBGCKUHWg6FXnLvD3feX5FqDihbrYi56j7QDqJifRW85f7xH49eo94EwBUEAC3jbTMee5rMHva53ES76LqcVNfNXUJFQixERhcZpVPqYKY2sorYHtaPDxz',
 };
 
-(function(){
+function initSoundGenerator({ SoundEffect }){
   
   const cachedSounds = {}; // lazy-loaded
   
@@ -20,8 +18,11 @@ const sounds = {
     return cachedSounds[soundId] = new SoundEffect(sounds[soundId]).generate().getAudio();
   }
   
-  playSound = function (soundId) {
+  function playSound(soundId) {
     return (cachedSounds[soundId] || cacheSound(soundId)).play();
   }
 
-})();
+  return {
+    playSound,
+  };
+}
