@@ -1,11 +1,9 @@
 // Polyphonic Synth Tone generator based on WebAudio
 // (very) inspired by https://devdocs.io/dom/web_audio_api/simple_synth
 
-function initSynth(){
+function initSynth({ audioContext }){
 
   const NOTES = [ 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B' ];
-  
-  const audioContext = new (window.AudioContext || window.webkitAudioContext);
   
   function makeCustomWaveform() {
     const sineTerms = new Float32Array([0, 0, 1, 0, 1]);
@@ -28,40 +26,23 @@ function initSynth(){
   }
   
   function playTone({ freq, velocity }, patch = patches[currentPatch]) {
-    const osc = audioContext.createOscillator();
-    const masterGainNode = audioContext.createGain();
-    masterGainNode.connect(audioContext.destination);
-
-    //////////////////////
-    // 1. Create a scope and connect it to the source
-    const scope = new Scope.ScopeSampler(audioContext);
-    masterGainNode.connect(scope.getInput());
-
-    // 2. Create a canvas renderer for the scope
-    const canvas = document.querySelector('#osc1');
-    const scopeVis = new Scope.ScopeRenderer(canvas);
-
-    // 3. Create a draw batch targeting 10fps
-    //    with a single draw instruction in the batch (1 per displayed scope)
-    const drawBatch = new Scope.ScopeDrawBatch();
-    drawBatch.add(() => scopeVis.draw(scope.sample()));
-
-    // 5. Start the render
-    drawBatch.start();
-    //////////////////////////////////////////
-
-
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    gainNode.connect(audioContext.destination);
     // masterGainNode.gain.value = 1.0;
-    masterGainNode.gain.value = velocity / 127;
-    osc.connect(masterGainNode);
+    gainNode.gain.value = velocity / 127;
+    oscillator.connect(gainNode);
     if (patch.apply) {
-      patch.apply(osc);
+      patch.apply(oscillator);
     } else {
-      osc.type = patch.type;
+      oscillator.type = patch.type;
     }
-    osc.frequency.value = freq;
-    osc.start();
-    return osc;
+    oscillator.frequency.value = freq;
+    oscillator.start();
+    return {
+      oscillator,
+      gainNode,
+    };
   }
 
   function playNote({ note, octave, velocity }, patch) {

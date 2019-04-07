@@ -45,9 +45,10 @@
     <script src="note-player.js"></script>
 
     <script>
-      const synth = initSynth(); // creates an audio context for one "channel"
+      const audioContext = new (window.AudioContext || window.webkitAudioContext);
+      const synth = initSynth({ audioContext }); // creates an audio context for one "channel"
       const soundGenerator = initSoundGenerator({ SoundEffect });
-      const notePlayer = initNotePlayer({ synth, soundGenerator });
+      const notePlayer = initNotePlayer({ audioContext, synth, soundGenerator });
 
       function handleParsedMidiMessage(message) {
         var state = mutateState(message);
