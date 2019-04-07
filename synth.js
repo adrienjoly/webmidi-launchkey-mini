@@ -29,6 +29,7 @@ function initSynth({ audioContext }){
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
     gainNode.connect(audioContext.destination);
+    // TODO: disconnect when we stop playing that note
     // masterGainNode.gain.value = 1.0;
     gainNode.gain.value = velocity / 127;
     oscillator.connect(gainNode);

@@ -18,11 +18,9 @@ function initNotePlayer({ audioContext, synth, soundGenerator }){
   const activeNotes = {};
 
   function stopNote({ note, channel }) {
-    const oscillator = activeNotes[note] || {};
-    if (oscillator.stop) {
-      activeNotes[note].stop();
-      delete activeNotes[note];
-    }
+    const { stop } = activeNotes[note] || {};
+    if (typeof stop === 'function') stop();  
+    delete activeNotes[note];
   }
 
   function playNote({ note, channel, velocity }) {
@@ -35,12 +33,12 @@ function initNotePlayer({ audioContext, synth, soundGenerator }){
       const octave = Math.floor(note / 12);
       const noteIdx = note % 12;
       const { oscillator, gainNode } = synth.playNote({ note: NOTES[noteIdx], octave, velocity });
-      activeNotes[note] = oscillator;
 
       //////////////////////
       // 1. Create a scope and connect it to the source
       const scope = new Scope.ScopeSampler(audioContext);
-      gainNode.connect(scope.getInput());
+      const scopeInput = scope.getInput();
+      gainNode.connect(scopeInput);
 
       // 2. Create a canvas renderer for the scope
       const canvas = document.querySelector('#osc1');
@@ -54,6 +52,14 @@ function initNotePlayer({ audioContext, synth, soundGenerator }){
       // 5. Start the render
       drawBatch.start();
       //////////////////////////////////////////
+
+      function stop() {
+        oscillator.stop();
+        gainNode.disconnect(scopeInput);
+        //drawBatch.stop();
+      }
+
+      activeNotes[note] = { stop };
 
     }
   }
