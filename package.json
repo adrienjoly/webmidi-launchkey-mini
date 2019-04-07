@@ -1,0 +1,19 @@
+{
+  "name": "webmidi-launchkey-mini",
+  "version": "1.0.0",
+  "description": "An experimental synthesizer made for the Novation Launchkey Mini MIDI keyboard, using Web Audio / WebMIDI. It can also be controlled using your computer's keyboard.",
+  "main": "index.html",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "start": "npx http-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adrienjoly/webmidi-launchkey-mini.git"
+  },
+  "author": "Adrien Joly",
+  "license": "ISC",
+  "homepage": "https://github.com/adrienjoly/webmidi-launchkey-mini#readme"
+}
