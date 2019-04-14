@@ -40,5 +40,5 @@ For next steps, check out the [issues](https://github.com/adrienjoly/webmidi-lau
 
 ## Contributors
 
-- [Adrien Joly](@adrienjoly)
-- [Jérôme Schneider](@netgusto)
+- [Adrien Joly](https://github.com/adrienjoly)
+- [Jérôme Schneider](https://github.com/netgusto)
