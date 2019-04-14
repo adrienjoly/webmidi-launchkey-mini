@@ -32,18 +32,18 @@
 
     <canvas id="osc1" width="2400" height="300" style="width: 1200px; height: 150px;"></canvas>
 
-    <script src="keyboard-input.js"></script> <!-- imports initKeyboardInput -->
-    <script src="webmidi-reader.js"></script>
-    <script src="launchkey-state.js"></script> <!-- imports initLaunchkeyState -->
+    <script src="keyboard-input.js"></script>   <!-- imports initKeyboardInput() -->
+    <script src="webmidi-reader.js"></script>   <!-- imports initWebMidiReader() -->
+    <script src="launchkey-state.js"></script>  <!-- imports initLaunchkeyState() -->
     <script src="render.js"></script>
     
-    <script src="lib/riffwave.js"></script> <!-- imports RIFFWAVE -->
-    <script src="lib/sfxr.js"></script> <!-- imports SoundEffect -->
-    <script src="lib/scope.js"></script> <!-- imports Scope -->
-    <script src="sound-generator.js"></script>
-    <script src="synth.js"></script> <!-- imports initSynth -->
-    <script src="oscilloscope.js"></script> <!-- imports initOscilloscope -->
-    <script src="note-player.js"></script>
+    <script src="lib/riffwave.js"></script>     <!-- imports RIFFWAVE -->
+    <script src="lib/sfxr.js"></script>         <!-- imports SoundEffect -->
+    <script src="lib/scope.js"></script>        <!-- imports Scope -->
+    <script src="sound-generator.js"></script>  <!-- imports initSoundGenerator() -->
+    <script src="synth.js"></script>            <!-- imports initSynth() -->
+    <script src="oscilloscope.js"></script>     <!-- imports initOscilloscope() -->
+    <script src="note-player.js"></script>      <!-- imports initNotePlayer() -->
 
     <script>
       // just to activate WebAudio after a user gesture
@@ -61,12 +61,10 @@
         const synth = initSynth({ audioContext }); // creates an audio context for one "channel"
         const soundGenerator = initSoundGenerator({ SoundEffect });
         const notePlayer = initNotePlayer({ synth, soundGenerator, oscilloscope });
-        
-        // 2. Setup inputs
 
+        // 2. Pipe MIDI messages to synth and UI
+        
         const keyboardState = initLaunchkeyState();
-        const computerKeyboard = initKeyboardInput();
-        const midiKeyboard = initWebMidiReader();
 
         function handleParsedMidiMessage(message) {
           var state = keyboardState.mutateFromParsedMidiMessage(message);
@@ -76,13 +74,18 @@
           }
         }
 
+        // 3. Setup and plug inputs
+
+        const computerKeyboard = initKeyboardInput();
+        const midiKeyboard = initWebMidiReader();
+
         computerKeyboard.onKeyEvents((parsedMidiMessage) => handleParsedMidiMessage(parsedMidiMessage));
 
         midiKeyboard.onMidiMessage((midiMessage) =>
           handleParsedMidiMessage(midiKeyboard.parseMidiMessage(midiMessage))
         );
 
-        // 3. Render the keyboard UI
+        // 4. Render the keyboard UI with initial state
 
         handleParsedMidiMessage({});
       };
