@@ -26,7 +26,7 @@
   </head>
   <body>
     <div id="renderedKeyboard">
-      Plug your Launchkey Mini, click on the button below, then watch this page while you interact with the keyboard.
+      Plug your MIDI instrument (if any), this click on the button.
       <button id="run">Start</button>
     </div>
 
@@ -34,7 +34,7 @@
 
     <script src="keyboard-input.js"></script>
     <script src="webmidi-reader.js"></script>
-    <script src="launchkey-state.js"></script>
+    <script src="launchkey-state.js"></script> <!-- imports initLaunchkeyState -->
     <script src="render.js"></script>
     
     <script src="lib/riffwave.js"></script> <!-- imports RIFFWAVE -->
@@ -46,35 +46,45 @@
     <script src="note-player.js"></script>
 
     <script>
-      const audioContext = new (window.AudioContext || window.webkitAudioContext);
-  
-      const oscilloscope = initOscilloscope({
-        Scope,
-        audioContext,
-        canvas: document.querySelector('#osc1')
-      });
-      const synth = initSynth({ audioContext }); // creates an audio context for one "channel"
-      const soundGenerator = initSoundGenerator({ SoundEffect });
-      const notePlayer = initNotePlayer({ synth, soundGenerator, oscilloscope });
-
-      function handleParsedMidiMessage(message) {
-        var state = mutateState(message);
-        document.getElementById('renderedKeyboard').innerHTML = renderHTML(state);
-        if (message.note) {
-          notePlayer.playParsedMidiMessage(message);
-        }
-      }
-
-      listenToKeyboardMessages(function(parsedMidiMessage) {
-        handleParsedMidiMessage(parsedMidiMessage);
-      });
-
-      listenToMidiMessages(function(midiMessage) {
-        handleParsedMidiMessage(parseMidiMessage(midiMessage));
-      });
-
+      // just to activate WebAudio after a user gesture
       document.getElementById('run').onclick = function() {
-        handleParsedMidiMessage({}); // just to activate WebAudio after a user gesture
+
+        // 1. Setup outputs
+
+        const audioContext = new (window.AudioContext || window.webkitAudioContext);
+  
+        const oscilloscope = initOscilloscope({
+          Scope,
+          audioContext,
+          canvas: document.querySelector('#osc1')
+        });
+        const synth = initSynth({ audioContext }); // creates an audio context for one "channel"
+        const soundGenerator = initSoundGenerator({ SoundEffect });
+        const notePlayer = initNotePlayer({ synth, soundGenerator, oscilloscope });
+        
+        // 2. Setup inputs
+
+        const keyboardState = initLaunchkeyState();
+
+        function handleParsedMidiMessage(message) {
+          var state = keyboardState.mutateFromParsedMidiMessage(message);
+          document.getElementById('renderedKeyboard').innerHTML = renderHTML(state);
+          if (message.note) {
+            notePlayer.playParsedMidiMessage(message);
+          }
+        }
+
+        listenToKeyboardMessages(function(parsedMidiMessage) {
+          handleParsedMidiMessage(parsedMidiMessage);
+        });
+
+        listenToMidiMessages(function(midiMessage) {
+          handleParsedMidiMessage(keyboardState.parseMidiMessage(midiMessage));
+        });
+
+        // 3. Render the keyboard UI
+
+        handleParsedMidiMessage({});
       };
     </script>
   </body>
