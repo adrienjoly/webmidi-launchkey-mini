@@ -35,8 +35,7 @@
     <script src="keyboard-input.js"></script>   <!-- imports initKeyboardInput() -->
     <script src="webmidi-reader.js"></script>   <!-- imports initWebMidiReader() -->
     <script src="launchkey-state.js"></script>  <!-- imports initLaunchkeyState() -->
-    <script src="render.js"></script>
-    
+    <script src="render.js"></script>           <!-- imports initKeyboardRenderer() -->
     <script src="lib/riffwave.js"></script>     <!-- imports RIFFWAVE -->
     <script src="lib/sfxr.js"></script>         <!-- imports SoundEffect -->
     <script src="lib/scope.js"></script>        <!-- imports Scope -->
@@ -64,11 +63,13 @@
 
         // 2. Pipe MIDI messages to synth and UI
         
+        const keyboardDiv = document.getElementById('renderedKeyboard');
+        const keyboardUI = initKeyboardRenderer();
         const keyboardState = initLaunchkeyState();
 
         function handleParsedMidiMessage(message) {
-          var state = keyboardState.mutateFromParsedMidiMessage(message);
-          document.getElementById('renderedKeyboard').innerHTML = renderHTML(state);
+          const state = keyboardState.mutateFromParsedMidiMessage(message);
+          keyboardDiv.innerHTML = keyboardUI.renderHTML(state);
           if (message.note) {
             notePlayer.playParsedMidiMessage(message);
           }
