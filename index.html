@@ -32,7 +32,7 @@
 
     <canvas id="osc1" width="2400" height="300" style="width: 1200px; height: 150px;"></canvas>
 
-    <script src="keyboard-input.js"></script>
+    <script src="keyboard-input.js"></script> <!-- imports initKeyboardInput -->
     <script src="webmidi-reader.js"></script>
     <script src="launchkey-state.js"></script> <!-- imports initLaunchkeyState -->
     <script src="render.js"></script>
@@ -65,6 +65,7 @@
         // 2. Setup inputs
 
         const keyboardState = initLaunchkeyState();
+        const computerKeyboard = initKeyboardInput();
 
         function handleParsedMidiMessage(message) {
           var state = keyboardState.mutateFromParsedMidiMessage(message);
@@ -74,9 +75,7 @@
           }
         }
 
-        listenToKeyboardMessages(function(parsedMidiMessage) {
-          handleParsedMidiMessage(parsedMidiMessage);
-        });
+        computerKeyboard.onKeyEvents((parsedMidiMessage) => handleParsedMidiMessage(parsedMidiMessage));
 
         listenToMidiMessages(function(midiMessage) {
           handleParsedMidiMessage(keyboardState.parseMidiMessage(midiMessage));
