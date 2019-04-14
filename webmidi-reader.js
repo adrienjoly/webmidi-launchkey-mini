@@ -19,28 +19,26 @@ function initWebMidiReader() {
 
   function listenToMidiMessages(handler) {
 
-    function emit(message) {
-      setTimeout(handler.bind(null, message), 0);
+    const emit = (message) => setTimeout(() => handler(message), 0);
+
+    const onMIDIFailure = () => emit({
+      error: 'Could not access your MIDI devices.'
+    });
+
+    function onMIDISuccess(midiAccess) {
+      // attach message handler to all MIDI inputs
+      for (var input of midiAccess.inputs.values()) {
+        console.log('Attaching MIDI device:', input.name);
+        input.onmidimessage = emit;
+      }
     }
 
     if (!navigator.requestMIDIAccess) {
-      emit({
-        error: 'Could not access your MIDI devices.'
-      });
-      return;
+      onMIDIFailure();
+    } else {
+      navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
     }
 
-    navigator.requestMIDIAccess()
-      .then(function onMIDISuccess(midiAccess) {
-        // attach message handler to all MIDI inputs
-        for (var input of midiAccess.inputs.values()) {
-          input.onmidimessage = emit.bind(null);
-        }
-      }, function onMIDIFailure() {
-        emit({
-          error: 'Could not access your MIDI devices.'
-        });
-      });
   }
 
   return {
