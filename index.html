@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <style>
+      /* keyboard ui */
       .nlk-half-key {
         display: inline-block;
         width: 12px;
@@ -22,15 +23,39 @@
         background-color: #111;
         color: #eee;
       }
+      #renderedKeyboard {
+        margin: 20px;
+      }
+      /* startup modal */
+      #startupModal {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255,255,255,0.8);
+      }
+      #startupModal p {
+        text-align: center;
+        line-height: 100px;
+      }
+      #run {
+        display: block;
+        margin: 0 auto;
+        font-size: 24px;
+      }
     </style>
   </head>
   <body>
-    <div id="renderedKeyboard">
-      Plug your MIDI instrument (if any), this click on the button.
+    <div id="renderedKeyboard"></div>
+
+    <canvas id="osc1" width="2400" height="300" style="width: 1200px; height: 150px;"></canvas>
+
+    <div id="startupModal">
+      <p>Plug your MIDI instrument (if any), then click on the button.</p>
       <button id="run">Start</button>
     </div>
 
-    <canvas id="osc1" width="2400" height="300" style="width: 1200px; height: 150px;"></canvas>
 
     <script src="keyboard-input.js"></script>   <!-- imports initKeyboardInput() -->
     <script src="webmidi-reader.js"></script>   <!-- imports initWebMidiReader() -->
@@ -45,6 +70,13 @@
     <script src="note-player.js"></script>      <!-- imports initNotePlayer() -->
 
     <script>
+      // 0. Setup the keyboard UI
+
+      const keyboardDiv = document.getElementById('renderedKeyboard');
+      const keyboardUI = initKeyboardRenderer();
+      const renderKeyboardUI = (state) => keyboardDiv.innerHTML = keyboardUI.renderHTML(state);
+      renderKeyboardUI({}); // render with initial state
+
       // just to activate WebAudio after a user gesture
       document.getElementById('run').onclick = function() {
 
@@ -63,13 +95,10 @@
 
         // 2. Pipe MIDI messages to synth and UI
         
-        const keyboardDiv = document.getElementById('renderedKeyboard');
-        const keyboardUI = initKeyboardRenderer();
         const keyboardState = initLaunchkeyState();
 
         function handleParsedMidiMessage(message) {
-          const state = keyboardState.mutateFromParsedMidiMessage(message);
-          keyboardDiv.innerHTML = keyboardUI.renderHTML(state);
+          renderKeyboardUI(keyboardState.mutateFromParsedMidiMessage(message));
           if (message.note) {
             notePlayer.playParsedMidiMessage(message);
           }
@@ -86,9 +115,11 @@
           handleParsedMidiMessage(midiKeyboard.parseMidiMessage(midiMessage))
         );
 
-        // 4. Render the keyboard UI with initial state
+        // 4. Remove the startup modal
 
-        handleParsedMidiMessage({});
+        const startupModal = document.getElementById('startupModal');
+        startupModal.parentNode.removeChild(startupModal);
+
       };
     </script>
   </body>
