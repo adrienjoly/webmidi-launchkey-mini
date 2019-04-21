@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      #knobs p label {
+        display: inline-block;
+        width: 120px;
+      }
+      #knobs p span {
+        display: inline-block;
+        margin-left: 10px;
+        width: 50px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="content">
+      <h1>Sound Maker</h1>
+      <div id="knobs"></div>
+    </div>
+
+    <script src="lib/riffwave.js"></script> <!-- imports RIFFWAVE -->
+    <script src="lib/sfxr.js"></script> <!-- imports SoundEffect -->
+
+    <script>
+
+      const knobGroups = [
+        {
+          label: 'Envelope',
+          knobs: [
+            { key: 'p_env_attack', label: 'Attack time' },
+            { key: 'p_env_sustain', label: 'Sustain time' },
+            { key: 'p_env_punch', label: 'Sustain punch' },
+            { key: 'p_env_decay', label: 'Decay time' },
+          ],
+        },
+        {
+          label: 'Tone',
+          knobs: [
+            { key: 'p_base_freq', label: 'Start frequency' },
+            { key: 'p_freq_limit', label: 'Min frequency cutoff' },
+            { key: 'p_freq_ramp', label: 'Slide', signed: true },
+            { key: 'p_freq_dramp', label: 'Delta slide', signed: true },
+          ],
+        },
+        {
+          label: 'Vibrato',
+          knobs: [
+            { key: 'p_vib_strength', label: 'Vibrato depth' },
+            { key: 'p_vib_speed', label: 'Vibrato speed' },
+          ],
+        },
+        {
+          label: 'Tonal change',
+          knobs: [
+            { key: 'p_arp_mod', label: 'Change amount', signed: true },
+            { key: 'p_arp_speed', label: 'Change speed' },
+          ],
+        },
+        {
+          label: 'Square wave duty', // proportion of time signal is high vs. low
+          knobs: [
+            { key: 'p_duty', label: 'Square duty' },
+            { key: 'p_duty_ramp', label: 'Duty sweep', signed: true },
+          ],
+        },
+        {
+          label: 'Repeat',
+          knobs: [
+            { key: 'p_repeat_speed', label: 'Repeat speed' },
+          ],
+        },
+        {
+          label: 'Flanger',
+          knobs: [
+            { key: 'p_pha_offset', label: 'Flanger offset', signed: true },
+            { key: 'p_pha_ramp', label: 'Flanger sweep', signed: true },
+          ],
+        },
+        {
+          label: 'Low-pass filter',
+          knobs: [
+            { key: 'p_lpf_freq', label: 'Low-pass filter cutoff' },
+            { key: 'p_lpf_ramp', label: 'Low-pass filter cutoff sweep', signed: true },
+            { key: 'p_lpf_resonance', label: 'Low-pass filter resonance' },
+          ],
+        },
+        {
+          label: 'High-pass filter',
+          knobs: [
+            { key: 'p_hpf_freq', label: 'High-pass filter cutoff' },
+            { key: 'p_hpf_ramp', label: 'High-pass filter cutoff sweep', signed: true },
+          ],
+        },
+      ];
+      // note: some of the knobs listed above may not be used by noise generator (e.g. duty?)
+      const DRY_SNARE = '7BMHBGHtQBNHMkrpKTFy7cNBjZbgFpyZUvbv8X8fogVzVC9t8rHtuLK1vyDgC9JRZkPicMw6bWZs5a4xDexdVuD8DgT9gZr7kSaw2D2XfLiUG824x65Fj7XXm'; // dry snare
+      const soundParams = (new Params()).fromB58(DRY_SNARE); // contains knob values
+      const playSound = () => new SoundEffect(soundParams).generate().getAudio().play();
+      const knobsNode = document.getElementById('knobs');
+      const PRECISION = 100;
+      const appendKnob = ({ key, value, label, signed }) => {
+        if (!key.match(/^p_/)) return; // skip non-knob entries
+        const labelText = label || key.replace(/^p_/, '').replace(/_/g, ' ');
+        const labelNode = document.createElement('label');
+        labelNode.innerHTML = labelText + ': ';
+        const valueNode = document.createElement('span');
+        valueNode.innerHTML = value;
+        const inputNode = document.createElement('input');
+        inputNode.type = 'range';
+        inputNode.value = signed
+          ? (value + 1) * PRECISION / 2
+          : value * PRECISION;
+        inputNode.onclick = playSound;
+        inputNode.onchange = () => {
+          console.log({ key, value: inputNode.value });
+          const value = signed
+            ? (parseInt(2 * inputNode.value) - 1) / PRECISION
+            : parseInt(inputNode.value) / PRECISION;
+          valueNode.innerHTML = value;
+          soundParams[key] = value;
+          playSound();
+        };
+        const pNode = document.createElement('p');
+        pNode.appendChild(labelNode);
+        pNode.appendChild(inputNode);
+        pNode.appendChild(valueNode);
+        knobsNode.appendChild(pNode);
+      };
+      //Object.entries(soundParams).forEach(([key, value]) => appendKnob({ key, value }));
+      Object.values(knobGroups).forEach(({ label, knobs }) => {
+        const headingNode = document.createElement('h2');
+        headingNode.innerHTML = label;
+        knobsNode.appendChild(headingNode);
+        knobs.forEach(({ key, label, signed }) => appendKnob({ key, label, signed, value: soundParams[key] }));
+      });
+      const pNode = document.createElement('p');
+      const buttonNode = document.createElement('button');
+      buttonNode.innerHTML = 'play';
+      buttonNode.onclick = playSound;
+      pNode.appendChild(buttonNode);
+      document.getElementById('content').appendChild(pNode);
+    </script>
+  </body>
+</html>
