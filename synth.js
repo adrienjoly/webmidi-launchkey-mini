@@ -22,7 +22,7 @@ function initSynth({ audioContext }){
     */
   ];
   
-  var currentPatch = 2;
+  var currentPatch = 0;
 
   function switchPatch() {
     currentPatch = (currentPatch + 1) % patches.length;
