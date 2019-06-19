@@ -50,7 +50,7 @@ function initNotePlayer({ synth, soundGenerator, oscilloscope }){
     const commandKey = command === 11;
     const keyUp = command === 8;
     if (commandKey) {
-      if (keyDown) commandMapping[note]();
+      if (velocity > 0) commandMapping[note]();
     } else if (keyUp) {
       stopNote({ note, channel });
     } else {
