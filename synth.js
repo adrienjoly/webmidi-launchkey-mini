@@ -12,11 +12,14 @@ function initSynth({ audioContext }){
   }
   
   var patches = [
-    { type: 'sine' },
     { type: 'square' },
-    { type: 'sawtooth' },
     { type: 'triangle' },
+    /*
+    // temporarilly disabling these waveforms, for presentation at algolia
+    { type: 'sine' },
+    { type: 'sawtooth' },
     { type: 'custom', apply: osc => osc.setPeriodicWave(makeCustomWaveform()) },
+    */
   ];
   
   var currentPatch = 2;
