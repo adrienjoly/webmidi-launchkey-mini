@@ -12,11 +12,36 @@ function initSynth({ audioContext, onPatchChange }){
     return audioContext.createPeriodicWave(cosineTerms, sineTerms);
   }
   */
+
+  function makePulseWaveform ({ dutyCycle }) {
+    // from https://mitxela.com/projects/swotgb/about
+    const real = new Float32Array(512);
+    const imag = new Float32Array(512); // defaults to zeros
+    for (var n = 1; n < 512; n++) {
+      real[n] = 2 * Math.sin(Math.PI * n * dutyCycle) / (Math.PI * n)
+    }
+    return audioContext.createPeriodicWave(real, imag);
+  }
   
   var patches = [
     {
+      name: 'pulse (12.5%)',
+      type: 'custom',
+      apply: osc => osc.setPeriodicWave(makePulseWaveform({ dutyCycle: 0.125 }))
+    },
+    {
+      name: 'pulse (25%)',
+      type: 'custom',
+      apply: osc => osc.setPeriodicWave(makePulseWaveform({ dutyCycle: 0.25 }))
+    },
+    {
       name: 'pulse (50%)',
       type: 'square'
+    },
+    {
+      name: 'pulse (75%)',
+      type: 'custom',
+      apply: osc => osc.setPeriodicWave(makePulseWaveform({ dutyCycle: 0.75 }))
     },
     {
       name: 'triangle',
