@@ -5,14 +5,6 @@ function initSynth({ audioContext, onPatchChange }){
 
   const NOTES = [ 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B' ];
 
-  /*
-  function makeCustomWaveform() {
-    const sineTerms = new Float32Array([0, 0, 1, 0, 1]);
-    const cosineTerms = new Float32Array(sineTerms.length);
-    return audioContext.createPeriodicWave(cosineTerms, sineTerms);
-  }
-  */
-
   function makePulseWaveform ({ dutyCycle }) {
     // from https://mitxela.com/projects/swotgb/about
     const real = new Float32Array(512);
@@ -47,11 +39,8 @@ function initSynth({ audioContext, onPatchChange }){
       name: 'triangle',
       type: 'triangle'
     },
-    /*
-    // temporarilly disabling these waveforms, for presentation at algolia
     { type: 'sine' },
     { type: 'sawtooth' },
-    */
   ];
   
   var currentPatch = 0;

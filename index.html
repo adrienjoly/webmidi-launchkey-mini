@@ -80,7 +80,7 @@
       renderKeyboardUI({}); // render with initial state
 
       const patchNameDiv = document.getElementById('currentPatchName');
-      const onPatchChange = ({ name }) => patchNameDiv.innerHTML = `Patch / waveform: ${name}`;
+      const onPatchChange = ({ name, type }) => patchNameDiv.innerHTML = `Patch / waveform: ${name || type}`;
 
       // just to activate WebAudio after a user gesture
       document.getElementById('run').onclick = function() {
