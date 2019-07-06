@@ -10,8 +10,7 @@ function initKeyboardInput() {
 
     let octaveOffset = 0;
 
-    const keyNotes = {
-      // pads
+    const padNotes = {
       q: 36,
       w: 37,
       e: 38,
@@ -20,6 +19,9 @@ function initKeyboardInput() {
       y: 45,
       u: 46,
       i: 47,
+    };
+
+    const keyNotes = {
       // white keys + black keys
       z: 48, s: 49,
       x: 50, d: 51,
@@ -46,6 +48,10 @@ function initKeyboardInput() {
       '=': () => incrementOctave(+1), // to prevent having to press shift on american keyboard
     };
 
+    function getPadNote(key) {
+      return padNotes[key]
+    }
+
     function getKeyNote(key) {
       return keyNotes[key] + octaveOffset * 12;
     }
@@ -56,12 +62,13 @@ function initKeyboardInput() {
 
     function handleKeyboardEvent(e) {
       const keyUp = e.type === 'keyup';
-      const note = getKeyNote(e.key);
+      const padNote = getPadNote(e.key);
       const commandNote = getKeyCommand(e.key);
+      const note = getKeyNote(e.key) || padNote || commandNote;
       if (note) {
         // send a "pad" or "keyboard" event (note)
         emit({
-          channel: note < 48 ? 10 : 1,
+          channel: padNote ? 10 : 1,
           command: keyUp ? 8 : 9,
           note,
           velocity: keyUp ? 0 : 64,
@@ -70,7 +77,7 @@ function initKeyboardInput() {
         // send a "command" event (e.g. prev/next controllers)
         emit({
           command: 11,
-          note: commandNote,
+          note,
           velocity: keyUp ? 0 : 64,
         });
       }
