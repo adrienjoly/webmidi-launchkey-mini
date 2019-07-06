@@ -32,6 +32,7 @@ function initKeyboardInput() {
     };
 
     const keyCommands = {
+      '[': 106, // trackPrev
       ']': 107, // trackNext
     }
 
@@ -54,11 +55,12 @@ function initKeyboardInput() {
           note,
           velocity: keyUp ? 0 : 64,
         });
-      } else if (keyUp) {
+      } else {
         // send a "command" event (e.g. prev/next controllers)
         emit({
           command: 11,
-          note: getKeyCommand(e.key)
+          note: getKeyCommand(e.key),
+          velocity: keyUp ? 0 : 64,
         });
       }
     }

@@ -12,6 +12,7 @@ function initNotePlayer({ synth, soundGenerator, oscilloscope }){
   };
 
   const commandMapping = {
+    106: () => synth.switchPatch(-1),
     107: () => synth.switchPatch(),
   };
 

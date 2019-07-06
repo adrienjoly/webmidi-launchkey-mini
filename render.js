@@ -26,7 +26,7 @@ function initKeyboardRenderer() {
       values: state.knobs
     }),
     '<h4>Pads</h4>',
-    renderBinKey({ note: state.trackPrev ? '<' : '' }) + halfKey + renderWhiteNotes({
+    renderBinKey({ note: state.trackPrev ? '<' : '', hotkey: '[' }) + halfKey + renderWhiteNotes({
       notes: [ 40, 41, 42, 43, 48, 49, 50, 51 ],
       values: state.padNotes
     }) + halfKey + renderBinKey({ note: state.playTop ? '▶' : '' }) + halfKey + renderBinKey({ note: state.scenePrev ? '⬆' : '' }),
