@@ -8,6 +8,8 @@ function initKeyboardInput() {
       setTimeout(handler.bind(null, message), 0);
     }
 
+    let octaveOffset = 0;
+
     const keyNotes = {
       // pads
       q: 36,
@@ -34,10 +36,18 @@ function initKeyboardInput() {
     const keyCommands = {
       '[': 106, // trackPrev
       ']': 107, // trackNext
-    }
+    };
+
+    const incrementOctave = (incr) => octaveOffset += incr;
+
+    const otherKeys = {
+      '+': () => incrementOctave(+1),
+      '-': () => incrementOctave(-1),
+      '=': () => incrementOctave(+1), // to prevent having to press shift on american keyboard
+    };
 
     function getKeyNote(key) {
-      return keyNotes[key];
+      return keyNotes[key] + octaveOffset * 12;
     }
 
     function getKeyCommand(key) {
@@ -47,6 +57,7 @@ function initKeyboardInput() {
     function handleKeyboardEvent(e) {
       const keyUp = e.type === 'keyup';
       const note = getKeyNote(e.key);
+      const commandNote = getKeyCommand(e.key);
       if (note) {
         // send a "pad" or "keyboard" event (note)
         emit({
@@ -55,18 +66,26 @@ function initKeyboardInput() {
           note,
           velocity: keyUp ? 0 : 64,
         });
-      } else {
+      } else if (commandNote) {
         // send a "command" event (e.g. prev/next controllers)
         emit({
           command: 11,
-          note: getKeyCommand(e.key),
+          note: commandNote,
           velocity: keyUp ? 0 : 64,
         });
       }
     }
 
+    function handleKeyboardCommand(e) {
+      const otherKeyFct = otherKeys[e.key];
+      if (otherKeyFct) {
+        otherKeyFct();
+      }
+    }
+
     window.addEventListener('keydown', e => !e.repeat && handleKeyboardEvent(e));
     window.addEventListener('keyup', handleKeyboardEvent);
+    window.addEventListener('keypress', handleKeyboardCommand);
   }
 
   return {
