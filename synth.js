@@ -1,32 +1,42 @@
 // Polyphonic Synth Tone generator based on WebAudio
 // (very) inspired by https://devdocs.io/dom/web_audio_api/simple_synth
 
-function initSynth({ audioContext }){
+function initSynth({ audioContext, onPatchChange }){
 
   const NOTES = [ 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B' ];
-  
+
+  /*
   function makeCustomWaveform() {
     const sineTerms = new Float32Array([0, 0, 1, 0, 1]);
     const cosineTerms = new Float32Array(sineTerms.length);
     return audioContext.createPeriodicWave(cosineTerms, sineTerms);
   }
+  */
   
   var patches = [
-    { type: 'square' },
-    { type: 'triangle' },
+    {
+      name: 'pulse (50%)',
+      type: 'square'
+    },
+    {
+      name: 'triangle',
+      type: 'triangle'
+    },
     /*
     // temporarilly disabling these waveforms, for presentation at algolia
     { type: 'sine' },
     { type: 'sawtooth' },
-    { type: 'custom', apply: osc => osc.setPeriodicWave(makeCustomWaveform()) },
     */
   ];
   
   var currentPatch = 0;
 
-  function switchPatch() {
-    currentPatch = (currentPatch + 1) % patches.length;
+  function switchPatch(incr = 1) {
+    currentPatch = (currentPatch + incr) % patches.length;
+    onPatchChange && onPatchChange(patches[currentPatch]);
   }
+
+  onPatchChange && onPatchChange(patches[currentPatch]);
   
   function playTone({ freq, velocity }, patch = patches[currentPatch]) {
     const oscillator = audioContext.createOscillator();

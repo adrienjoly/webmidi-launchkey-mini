@@ -51,6 +51,8 @@
 
     <canvas id="osc1" width="2400" height="300" style="width: 1200px; height: 150px;"></canvas>
 
+    <div id="currentPatchName"></div>
+
     <div id="startupModal">
       <p>Plug your MIDI instrument (if any), then click on the button.</p>
       <button id="run">Start</button>
@@ -70,12 +72,15 @@
     <script src="note-player.js"></script>      <!-- imports initNotePlayer() -->
 
     <script>
-      // 0. Setup the keyboard UI
+      // 0. Setup the UI
 
       const keyboardDiv = document.getElementById('renderedKeyboard');
       const keyboardUI = initKeyboardRenderer();
       const renderKeyboardUI = (state) => keyboardDiv.innerHTML = keyboardUI.renderHTML(state);
       renderKeyboardUI({}); // render with initial state
+
+      const patchNameDiv = document.getElementById('currentPatchName');
+      const onPatchChange = ({ name }) => patchNameDiv.innerHTML = `Patch / waveform: ${name}`;
 
       // just to activate WebAudio after a user gesture
       document.getElementById('run').onclick = function() {
@@ -89,7 +94,7 @@
           audioContext,
           canvas: document.querySelector('#osc1')
         });
-        const synth = initSynth({ audioContext }); // creates an audio context for one "channel"
+        const synth = initSynth({ audioContext, onPatchChange }); // creates an audio context for one "channel"
         const soundGenerator = initSoundGenerator({ SoundEffect });
         const notePlayer = initNotePlayer({ synth, soundGenerator, oscilloscope });
 
