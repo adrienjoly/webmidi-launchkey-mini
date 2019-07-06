@@ -66,17 +66,9 @@ function initKeyboardInput() {
       const commandNote = getKeyCommand(e.key);
       const note = getKeyNote(e.key) || padNote || commandNote;
       if (note) {
-        // send a "pad" or "keyboard" event (note)
         emit({
           channel: padNote ? 10 : 1,
-          command: keyUp ? 8 : 9,
-          note,
-          velocity: keyUp ? 0 : 64,
-        });
-      } else if (commandNote) {
-        // send a "command" event (e.g. prev/next controllers)
-        emit({
-          command: 11,
+          command: commandNote ? 11 : (keyUp ? 8 : 9),
           note,
           velocity: keyUp ? 0 : 64,
         });
