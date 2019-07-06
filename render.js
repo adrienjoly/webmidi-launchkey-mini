@@ -20,11 +20,13 @@ function initKeyboardRenderer() {
   const renderBinKey = ({ ...props }) => renderKey({ ...props, className: 'nlk-white' });
 
   const renderHTML = state => ([
+    /*
     '<h4>Knobs</h4>',
     halfKey + halfKey + halfKey + renderWhiteNotes({
       notes: [ 21, 22, 23, 24, 25, 26, 27, 28 ],
       values: state.knobs
     }),
+    */
     '<h4>Pads</h4>',
     renderBinKey({ note: state.trackPrev ? '<' : '', hotkey: '[' }) + halfKey + renderWhiteNotes({
       notes: [ 40, 41, 42, 43, 48, 49, 50, 51 ],
