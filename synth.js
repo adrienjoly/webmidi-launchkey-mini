@@ -57,7 +57,8 @@ function initSynth({ audioContext, onPatchChange }){
   var currentPatch = 0;
 
   function switchPatch(incr = 1) {
-    currentPatch = (currentPatch + incr) % patches.length;
+    currentPatch = (patches.length + currentPatch + incr) % patches.length;
+    console.log(currentPatch);
     onPatchChange && onPatchChange(patches[currentPatch]);
   }
 
