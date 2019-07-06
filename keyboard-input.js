@@ -2,6 +2,36 @@
 
 function initKeyboardInput() {
 
+  const PAD_NOTES = {
+    q: 36,
+    w: 37,
+    e: 38,
+    r: 39,
+    t: 44,
+    y: 45,
+    u: 46,
+    i: 47,
+  };
+
+  const KEY_NOTES = {
+    // white keys + black keys
+    z: 48, s: 49,
+    x: 50, d: 51,
+    c: 52,
+    v: 53, g: 54,
+    b: 55, h: 56,
+    n: 57, j: 58,
+    m: 59,
+    ',': 60, 'l': 61,
+    '.': 62, ';': 63,
+    '/': 64,
+  };
+
+  const COMMANDS = {
+    '[': 106, // trackPrev
+    ']': 107, // trackNext
+  };
+
   function listenToKeyboardMessages(handler) {
 
     function emit(message) {
@@ -10,55 +40,19 @@ function initKeyboardInput() {
 
     let octaveOffset = 0;
 
-    const padNotes = {
-      q: 36,
-      w: 37,
-      e: 38,
-      r: 39,
-      t: 44,
-      y: 45,
-      u: 46,
-      i: 47,
-    };
-
-    const keyNotes = {
-      // white keys + black keys
-      z: 48, s: 49,
-      x: 50, d: 51,
-      c: 52,
-      v: 53, g: 54,
-      b: 55, h: 56,
-      n: 57, j: 58,
-      m: 59,
-      ',': 60, 'l': 61,
-      '.': 62, ';': 63,
-      '/': 64,
-    };
-
-    const keyCommands = {
-      '[': 106, // trackPrev
-      ']': 107, // trackNext
-    };
-
     const incrementOctave = (incr) => octaveOffset += incr;
 
-    const otherKeys = {
+    const OTHER_KEYS = {
       '+': () => incrementOctave(+1),
       '-': () => incrementOctave(-1),
       '=': () => incrementOctave(+1), // to prevent having to press shift on american keyboard
     };
 
-    function getPadNote(key) {
-      return padNotes[key]
-    }
+    const getPadNote = key => PAD_NOTES[key];
 
-    function getKeyNote(key) {
-      return keyNotes[key] + octaveOffset * 12;
-    }
-
-    function getKeyCommand(key) {
-      return keyCommands[key];
-    }
+    const getKeyNote = key => KEY_NOTES[key] + octaveOffset * 12;
+    
+    const getKeyCommand = key => COMMANDS[key];
 
     function handleKeyboardEvent(e) {
       const keyUp = e.type === 'keyup';
@@ -76,7 +70,7 @@ function initKeyboardInput() {
     }
 
     function handleKeyboardCommand(e) {
-      const otherKeyFct = otherKeys[e.key];
+      const otherKeyFct = OTHER_KEYS[e.key];
       if (otherKeyFct) {
         otherKeyFct();
       }
