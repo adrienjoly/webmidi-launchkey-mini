@@ -2,6 +2,9 @@
 
 function initKeyboardInput() {
 
+  const MIN_OCTAVE = 1;
+  const MAX_OCTAVE = 8;
+
   const PAD_NOTES = {
     q: 36,
     w: 37,
@@ -40,7 +43,9 @@ function initKeyboardInput() {
 
     let octaveOffset = 4;
 
-    const incrementOctave = (incr) => octaveOffset += incr;
+    const incrementOctave = (incr) => {
+      octaveOffset = Math.max(Math.min(octaveOffset + incr, MAX_OCTAVE), MIN_OCTAVE);
+    }
 
     const OTHER_KEYS = {
       '+': () => incrementOctave(+1),
