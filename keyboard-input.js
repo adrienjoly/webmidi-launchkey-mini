@@ -49,7 +49,7 @@ function initKeyboardInput() {
         velocity: 0,
       }));
 
-    let octaveOffset = 4;
+    let octaveOffset = 3;
 
     const incrementOctave = (incr) => {
       stopAllNotes();
