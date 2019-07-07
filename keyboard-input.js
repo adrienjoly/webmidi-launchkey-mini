@@ -41,9 +41,18 @@ function initKeyboardInput() {
       setTimeout(handler.bind(null, message), 0);
     }
 
+    const stopAllNotes = () =>
+      Object.keys(KEY_NOTES).forEach(key => emit({
+        channel: 1,
+        command: 8,
+        note: getKeyNote(key),
+        velocity: 0,
+      }));
+
     let octaveOffset = 4;
 
     const incrementOctave = (incr) => {
+      stopAllNotes();
       octaveOffset = Math.max(Math.min(octaveOffset + incr, MAX_OCTAVE), MIN_OCTAVE);
     }
 
