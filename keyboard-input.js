@@ -14,17 +14,17 @@ function initKeyboardInput() {
   };
 
   const KEY_NOTES = {
-    // white keys + black keys
-    z: 48, s: 49,
-    x: 50, d: 51,
-    c: 52,
-    v: 53, g: 54,
-    b: 55, h: 56,
-    n: 57, j: 58,
-    m: 59,
-    ',': 60, 'l': 61,
-    '.': 62, ';': 63,
-    '/': 64,
+    // white keys + black keys, at octave = 0
+    z: 0, s: 1,
+    x: 2, d: 3,
+    c: 4,
+    v: 5, g: 6,
+    b: 7, h: 8,
+    n: 9, j: 10,
+    m: 11,
+    ',': 12, 'l': 13,
+    '.': 14, ';': 15,
+    '/': 16,
   };
 
   const COMMANDS = {
@@ -38,7 +38,7 @@ function initKeyboardInput() {
       setTimeout(handler.bind(null, message), 0);
     }
 
-    let octaveOffset = 0;
+    let octaveOffset = 4;
 
     const incrementOctave = (incr) => octaveOffset += incr;
 
